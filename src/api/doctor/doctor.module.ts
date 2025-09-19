@@ -4,7 +4,8 @@ import { DoctorController } from "./doctor.controller";
 import { MailModule } from "../mail/mail.module";
 
 @Module({
-  controllers: [DoctorController, MailModule],
+  imports: [MailModule],
+  controllers: [DoctorController],
   providers: [DoctorService],
 })
 export class DoctorModule {}
