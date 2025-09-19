@@ -21,7 +21,7 @@ import { RolesGuard } from "../../common/guards/role.guard";
 import { JwtAuthGuard } from "../../common/guards/jwt.auth.guard";
 import { Role } from "../../common/enum";
 import { Roles } from "../../common/decorators/roles.decorator";
-import { SelfGuard } from "../../common/guards/self.guard";
+import { AdminSelfGuard } from "../../common/guards/admin-self.guard";
 
 @Controller("admin")
 export class AdminController {
@@ -90,7 +90,7 @@ export class AdminController {
     description: "Admin with id [id] fetched successfully",
   })
   @ApiResponse({ status: 404, description: "Admin with id [id] not found" })
-  @UseGuards(JwtAuthGuard, RolesGuard, SelfGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, AdminSelfGuard)
   @Roles(Role.SUPERADMIN, Role.ADMIN)
   @Get(":id")
   findOne(@Param("id") id: string) {
@@ -108,7 +108,7 @@ export class AdminController {
     description: "Admin with username [username] already exists",
   })
   @ApiResponse({ status: 404, description: "Admin with id [id] not found" })
-  @UseGuards(JwtAuthGuard, RolesGuard, SelfGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, AdminSelfGuard)
   @Roles(Role.SUPERADMIN, Role.ADMIN)
   @Patch(":id")
   update(@Param("id") id: string, @Body() updateAdminDto: UpdateAdminDto) {

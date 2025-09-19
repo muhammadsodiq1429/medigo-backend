@@ -49,7 +49,7 @@ export class CreateDoctorDto {
   @Transform(({ value }: { value: string }) => new Date(value).toISOString())
   date_of_birth?: string;
 
-  @ApiProperty({ example: "Toshkent shahar" })
+  @ApiProperty({ example: "Toshkent_shahar" })
   @IsOptional()
   @IsEnum(region_enum)
   region?: region_enum;

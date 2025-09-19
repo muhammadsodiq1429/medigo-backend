@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -7,14 +8,52 @@ import { CreateDoctorDto } from "./dto/create-doctor.dto";
 import { UpdateDoctorDto } from "./dto/update-doctor.dto";
 import { PrismaService } from "../../core/prisma.service";
 import * as bcrypt from "bcrypt";
-import { MailService } from "../mail/mail.service";
+import { Response } from "express";
+import { Role } from "../../common/enum";
+import { IPayload } from "../../common/types";
+import { JwtService } from "@nestjs/jwt";
+import { TokenService } from "../../core/token.service";
+import { DoctorSignInDto } from "./dto/doctor-sign-in.dto";
 
 @Injectable()
 export class DoctorService {
   constructor(
     private readonly prisma: PrismaService,
-    private mailService: MailService
+    private jwtService: JwtService,
+    private tokenService: TokenService
   ) {}
+
+  async doctorSignIn({ email, password }: DoctorSignInDto, res: Response) {
+    const doctor = await this.prisma.doctor.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!doctor || !(await bcrypt.compare(password, doctor.hashed_password)))
+      throw new BadRequestException("Email or password incorrect");
+
+    const payload: IPayload = {
+      id: doctor.id,
+      role: Role.DOCTOR,
+      login: doctor.email,
+      isActive: doctor.is_active,
+    };
+
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(payload, res);
+
+    await this.prisma["doctor"].update({
+      where: { id: doctor.id },
+      data: { hashed_refresh_token: await bcrypt.hash(refreshToken, 7) },
+    });
+
+    return {
+      statusCode: 200,
+      message: "Admin signed in successfully",
+      accessToken,
+    };
+  }
 
   async create({ password, ...createDoctorDto }: CreateDoctorDto) {
     const { email, phone } = createDoctorDto;
@@ -64,7 +103,7 @@ export class DoctorService {
   async findOne(id: number) {
     const doctor = await this.prisma.doctor.findUnique({
       where: { id },
-      omit: { hashed_password: true },
+      omit: { hashed_password: true, hashed_refresh_token: true },
     });
     if (!doctor) {
       throw new NotFoundException(`Doctor with id ${id} not found`);

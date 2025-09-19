@@ -77,7 +77,7 @@ model doctor {
   date_of_birth        DateTime?               @db.Date
   avatar_url           String?                 @db.VarChar(255)
   verification_status  doctor_ver_status_enum? @default(draft)
-  is_active            Boolean?                @default(false)
+  is_active            Boolean                 @default(false)
   region               region_enum?
   average_rating       Decimal?                @default(0) @db.Decimal(12, 2)
   review_count         Int?                    @default(0)
@@ -149,7 +149,7 @@ model patient {
   phone                String    @unique @db.VarChar(255)
   email                String    @unique @db.VarChar(255)
   gender               gender?
-  is_active            Boolean?  @default(false)
+  is_active            Boolean  @default(false)
   avatar_url           String?   @db.VarChar(255)
   date_of_birth        DateTime? @db.Date
   hashed_password      String    @db.VarChar(255)

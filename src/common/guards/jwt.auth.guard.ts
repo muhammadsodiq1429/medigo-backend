@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  ForbiddenException,
 } from "@nestjs/common";
 import { JwtService, TokenExpiredError, JsonWebTokenError } from "@nestjs/jwt";
 import { Request } from "express";
@@ -38,6 +39,9 @@ export class JwtAuthGuard implements CanActivate {
         "An error occurred during token verification."
       );
     }
+
+    if (!request["user"].isActive)
+      throw new ForbiddenException("Inactive user");
 
     return true;
   }

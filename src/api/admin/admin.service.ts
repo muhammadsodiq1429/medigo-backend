@@ -56,6 +56,7 @@ export class AdminService implements OnModuleInit {
       id: admin.id,
       role: admin.is_superadmin ? Role.SUPERADMIN : Role.ADMIN,
       login: admin.username,
+      isActive: admin.is_active,
     };
 
     const { accessToken, refreshToken } =
@@ -136,6 +137,7 @@ export class AdminService implements OnModuleInit {
         id: admin.id,
         role: admin.is_superadmin ? Role.SUPERADMIN : Role.ADMIN,
         login: admin.username,
+        isActive: admin.is_active,
       };
 
       const { accessToken, refreshToken: newRefreshToken } =

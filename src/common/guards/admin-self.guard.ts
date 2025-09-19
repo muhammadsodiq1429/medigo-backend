@@ -8,14 +8,14 @@ import { IRequest } from "../types";
 import { Role } from "../enum";
 
 @Injectable()
-export class SelfGuard implements CanActivate {
+export class AdminSelfGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req: IRequest = context.switchToHttp().getRequest();
     const user = req.user;
 
     const resourceId = req.params.id;
 
-    if (user.role === Role.SUPERADMIN || user.role === Role.ADMIN) {
+    if (user.role === Role.SUPERADMIN) {
       return true;
     }
 
